@@ -1,0 +1,60 @@
+name: Deploy storybook [dev]
+
+on:
+  workflow_dispatch:
+
+env:
+  TERRAFORM_ROOT: ./terraform/dev
+  NODE_VERSION: 18
+  ENV: dev
+
+  S3_STORYBOOK_BUCKET_NAME: ${{ vars.S3_STORYBOOK_BUCKET_NAME }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  # UNCOMMENT FOR DATABASE (1 of 5)
+  # TF_VAR_db_password: this_should_be_loaded_from_secrets_12345
+
+jobs:
+  # only provision the ECR initially so we have somewhere to push the image to
+  build-and-deploy:
+    name: Build storybook and deploy
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./frontend
+    environment: dev
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@master
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - name: Install pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies with pnpm
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Build storybook
+        working-directory: frontend
+        run: pnpm run build-storybook
+      
+      - name: Deploy to S3
+        uses: reggionick/s3-deploy@v4
+        with:
+          folder: frontend/storybook-static
+          bucket: ${{ env.S3_STORYBOOK_BUCKET_NAME }}
+          bucket-region: us-east-2
