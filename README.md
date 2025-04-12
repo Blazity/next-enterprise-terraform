@@ -2,7 +2,7 @@
 
 This project provides a complete enterprise-grade Terraform setup for deploying a **Next.js** application to **AWS**. It integrates and configures a development cloud architecture with a fully automated deployment pipeline using Terraform and AWS services.
 
-![Architecture](“arch-diagram.webp”)
+![Architecture](“./arch-diagram.webp?raw=true”)
 
 ## 🚀 Features
 
