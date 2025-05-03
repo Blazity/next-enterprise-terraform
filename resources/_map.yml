@@ -1,0 +1,42 @@
+# _map.yml - File Mapping Configuration
+#
+# PURPOSE:
+# This configuration file defines how resources are mapped and copied by the CLI
+# from their source locations to target destinations in the repository.
+#
+# STRUCTURE:
+# The file uses a 'mappings' list where each entry represents a file to be copied.
+#
+# FIELDS:
+# - legible-name: Human-readable identifier for the mapping (for logs and reference)
+# - source: Path to the source file, relative to where the _map.yml file is located
+# - destination: Target location where the file should be copied
+#
+# DESTINATION PATHS:
+# - When specifying 'next-enterprise/' as the destination, this refers to the ROOT 
+#   of the next-enterprise repository where the CLI is being executed
+# - You can specify subdirectories like 'next-enterprise/some-directory/another-directory' 
+#   and the CLI will create these directories as needed, relative to the repository root
+# - Paths are always normalized according to the operating system standards
+#
+# EXAMPLES:
+# - A destination of 'next-enterprise/' copies directly to the root
+# - A destination of 'next-enterprise/config/' copies to a 'config' directory in the root
+# - A destination of 'next-enterprise/src/utils/' creates and copies to nested directories
+
+mappings:
+  - legible-name: Custom Cache Handler
+    source: ./cache-handler.mjs
+    destination: next-enterprise/
+    
+  - legible-name: Docker Compose
+    source: ./docker-compose.yml
+    destination: next-enterprise/
+
+  - legible-name: Dockerfile
+    source: ./Dockerfile
+    destination: next-enterprise/
+
+  - legible-name: npmrc
+    source: ./.npmrc
+    destination: next-enterprise/
