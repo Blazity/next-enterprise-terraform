@@ -12,31 +12,43 @@
 # - source: Path to the source file, relative to where the _map.yml file is located
 # - destination: Target location where the file should be copied
 #
+# SPECIAL VALUES:
+# - ${next-enterprise}: This special value represents the current working directory (CWD)
+#   where the CLI is being executed. Note that the CLI can ONLY be run from within the
+#   next-enterprise repository root directory.
+#
 # DESTINATION PATHS:
-# - When specifying 'next-enterprise/' as the destination, this refers to the ROOT 
-#   of the next-enterprise repository where the CLI is being executed
-# - You can specify subdirectories like 'next-enterprise/some-directory/another-directory' 
-#   and the CLI will create these directories as needed, relative to the repository root
+# - All destinations are relative to the current working directory (where the CLI is run)
+# - Using ${next-enterprise}/ is equivalent to ./ and refers to the repository root
+# - You can specify subdirectories like ${next-enterprise}/some-directory/ and the CLI
+#   will create these directories as needed
+# - Absolute paths are not recommended but can be used if necessary
 # - Paths are always normalized according to the operating system standards
 #
 # EXAMPLES:
-# - A destination of 'next-enterprise/' copies directly to the root
-# - A destination of 'next-enterprise/config/' copies to a 'config' directory in the root
-# - A destination of 'next-enterprise/src/utils/' creates and copies to nested directories
+# - destination: ${next-enterprise}/             # Copies to the repository root
+# - destination: ${next-enterprise}/config/      # Copies to a 'config' directory
+# - destination: ${next-enterprise}/src/utils/   # Creates and copies to nested directories
+# - destination: ./                              # Alternative syntax for repository root
+# - destination: ./config/                       # Alternative syntax for subdirectory
+#
+# EXECUTION CONTEXT:
+# The CLI tool must be executed from within the next-enterprise repository root.
+# All destination paths are resolved relative to this execution context.
 
 mappings:
   - legible-name: Custom Cache Handler
     source: ./cache-handler.mjs
-    destination: next-enterprise/
+    destination: ${next-enterprise}/
     
   - legible-name: Docker Compose
     source: ./docker-compose.yml
-    destination: next-enterprise/
+    destination: ${next-enterprise}/
 
   - legible-name: Dockerfile
     source: ./Dockerfile
-    destination: next-enterprise/
+    destination: ${next-enterprise}/
 
   - legible-name: npmrc
     source: ./.npmrc
-    destination: next-enterprise/
+    destination: ${next-enterprise}/
