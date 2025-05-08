@@ -8,6 +8,7 @@ env:
     DOCKER_ENV: production
     NODE_VERSION: 18
     TF_VAR_docker_image_tag: ${{ github.sha }}
+    AWS_REGION: ${{ vars.AWS_REGION }}
     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
@@ -25,7 +26,7 @@ jobs:
               with:
                   aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
                   aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-                  aws-region: eu-west-2
+                  aws-region: ${{ env.AWS_REGION }}
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v1
               with:
