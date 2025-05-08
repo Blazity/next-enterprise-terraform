@@ -7,7 +7,7 @@ resource "aws_ecs_task_definition" "frontend_ecs_task" {
     container_definitions    = <<DEFINITION
     [
         {
-            "name": "${var.project_name}-frontend-${var.env}",
+            "name": "${var.project_name}-fe-${var.env}",
             "image": "${aws_ecr_repository.frontend_ecr_repo.repository_url}:${var.docker_image_tag}",
             "essential": true,
             "environment": [
