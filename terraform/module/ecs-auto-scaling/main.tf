@@ -7,7 +7,7 @@ resource "aws_appautoscaling_target" "to_target" {
 }
 
 resource "aws_appautoscaling_policy" "to_memory" {
-    name               = "to-memory"
+    name               = "${var.project_name}-to-memory-${var.env}"
     policy_type        = "TargetTrackingScaling"
     resource_id        = aws_appautoscaling_target.to_target.resource_id
     scalable_dimension = aws_appautoscaling_target.to_target.scalable_dimension
@@ -23,7 +23,7 @@ resource "aws_appautoscaling_policy" "to_memory" {
 }
 
 resource "aws_appautoscaling_policy" "to_cpu" {
-    name = "to-cpu"
+    name = "${var.project_name}-to-cpu-${var.env}"
     policy_type = "TargetTrackingScaling"
     resource_id = aws_appautoscaling_target.to_target.resource_id
     scalable_dimension = aws_appautoscaling_target.to_target.scalable_dimension

@@ -3,7 +3,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 }
 
 resource "aws_ecs_task_definition" "frontend_ecs_task" {
-    family                   = "${var.project_name}-frontend-${var.env}"
+    family                   = "${var.project_name}-fe-${var.env}"
     container_definitions    = <<DEFINITION
     [
         {
@@ -44,7 +44,7 @@ resource "aws_ecs_task_definition" "frontend_ecs_task" {
 }
 
 resource "aws_ecs_service" "frontend_ecs" {
-    name            = "${var.project_name}-frontend-${var.env}"
+    name            = "${var.project_name}-fe-${var.env}"
     cluster         = aws_ecs_cluster.ecs_cluster.id
     task_definition = aws_ecs_task_definition.frontend_ecs_task.arn
     launch_type     = "FARGATE"

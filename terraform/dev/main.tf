@@ -22,7 +22,9 @@ module "app_infra" {
 }
 
 module "ecs_frontend_auto_scaling" {
+	env = "dev"
 	source = "../module/ecs-auto-scaling"
+	project_name = local.project_name
 	ecs_cluster = module.app_infra.ecs_cluster
 	ecs_service = module.app_infra.frontend_ecs_service
 }
