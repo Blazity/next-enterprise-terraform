@@ -38,7 +38,15 @@ jobs:
             echo "Bucket ${{ env.AWS_TERRAFORM_BUCKET_NAME }} already exists."
           else
             echo "Bucket ${{ env.AWS_TERRAFORM_BUCKET_NAME }} does not exist. Creating..."
-            aws s3api create-bucket --bucket "${{ env.AWS_TERRAFORM_BUCKET_NAME }}" --region ${{ env.AWS_REGION }} --create-bucket-configuration LocationConstraint=${{ env.AWS_REGION }}
+            
+            if [ "${{ env.AWS_REGION }}" = "us-east-1" ]; then
+              # us-east-1: No LocationConstraint needed
+              aws s3api create-bucket --bucket "${{ env.AWS_TERRAFORM_BUCKET_NAME }}" --region ${{ env.AWS_REGION }}
+            else
+              # Other regions: Must specify LocationConstraint
+              aws s3api create-bucket --bucket "${{ env.AWS_TERRAFORM_BUCKET_NAME }}" --region ${{ env.AWS_REGION }} --create-bucket-configuration LocationConstraint=${{ env.AWS_REGION }}
+            fi
+            
             echo "Bucket ${{ env.AWS_TERRAFORM_BUCKET_NAME }} created."
           fi
   ecr_frontend:
