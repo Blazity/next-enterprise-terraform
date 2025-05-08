@@ -33,8 +33,6 @@ jobs:
 
       - name: Check and Create S3 Bucket
         run: |
-          BUCKET_NAME=${{ env.AWS_TERRAFORM_BUCKET_NAME }}
-
           # Check if bucket exists
           if aws s3api head-bucket --bucket "${{ env.AWS_TERRAFORM_BUCKET_NAME }}" 2>/dev/null; then
             echo "Bucket ${{ env.AWS_TERRAFORM_BUCKET_NAME }} already exists."

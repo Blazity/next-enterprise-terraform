@@ -1,50 +1,91 @@
 name: Destroy stack [dev]
 
 on:
-    workflow_dispatch:
+  workflow_dispatch:
 
 env:
-    TERRAFORM_ROOT: ./terraform/dev
-    DOCKER_ENV: production
-    NODE_VERSION: 18
-    TF_VAR_docker_image_tag: ${{ github.sha }}
-    AWS_REGION: ${{ vars.AWS_REGION }}
-    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  TERRAFORM_ROOT: ./terraform/dev
+  DOCKER_ENV: production
+  NODE_VERSION: 18
+  TF_VAR_docker_image_tag: ${{ github.sha }}
+  AWS_TERRAFORM_BUCKET_NAME: ${{ vars.AWS_TERRAFORM_BUCKET_NAME }}
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
-    destroy:
-        name: Destroy Infrastructure
-        runs-on: ubuntu-22.04
-        environment: dev
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@master
+  destroy:
+    name: Destroy Infrastructure
+    runs-on: ubuntu-22.04
+    environment: dev
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@master
 
-            - name: Configure AWS Credentials
-              uses: aws-actions/configure-aws-credentials@v1
-              with:
-                  aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-                  aws-region: ${{ env.AWS_REGION }}
-            - name: Setup Terraform
-              uses: hashicorp/setup-terraform@v1
-              with:
-                  terraform_version: 1.1.8
-                  terraform_wrapper: false
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.1.8
+          terraform_wrapper: false
 
-            - name: Terraform Init
-              id: init
-              run: terraform init
-              working-directory: ${{ env.TERRAFORM_ROOT }}
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        working-directory: ${{ env.TERRAFORM_ROOT }}
 
-            - name: Destroy Terraform Infrastructure
-              run: terraform destroy -input=false -auto-approve
-              working-directory: ${{ env.TERRAFORM_ROOT }}
+      - name: Destroy Terraform Infrastructure
+        run: terraform destroy -input=false -auto-approve
+        working-directory: ${{ env.TERRAFORM_ROOT }}
 
-            - name: Cleanup State (Optional)
-              if: always()
-              run: |
-                  # This step can be used to clean up or perform post-destroy operations, like removing state files.
-                  # Just a placeholder, please feel free to leave it out if not necessary.
-                  echo "Cleanup after destroying infrastructure."
+      - name: Cleanup State (Optional)
+        if: always()
+        run: |
+          # This step can be used to clean up or perform post-destroy operations, like removing state files.
+          # Just a placeholder, please feel free to leave it out if not necessary.
+          echo "Cleanup after destroying infrastructure."
+  delete-terraform-bucket:
+    name: Destroy Terraform S3 bucket
+    runs-on: ubuntu-latest
+    needs: destroy
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Empty and Delete S3 Bucket
+        run: |
+          # Check if bucket exists
+          if aws s3api head-bucket --bucket "${{ env.AWS_TERRAFORM_BUCKET_NAME }}" 2>/dev/null; then
+            echo "Bucket ${{ env.AWS_TERRAFORM_BUCKET_NAME }} found. Deleting contents and bucket..."
+
+            # Remove all objects (including versions and delete markers if versioning is enabled)
+            aws s3api list-object-versions --bucket "${{ env.AWS_TERRAFORM_BUCKET_NAME }}" --output json \
+              | jq -r '.Versions[]?, .DeleteMarkers[]? | {Key: .Key, VersionId: .VersionId} | @json' \
+              | jq -s '{Objects: .}' \
+              | aws s3api delete-objects --bucket "${{ env.AWS_TERRAFORM_BUCKET_NAME }}" --delete file:///dev/stdin
+
+            # Delete the bucket
+            aws s3api delete-bucket --bucket "${{ env.AWS_TERRAFORM_BUCKET_NAME }}"
+            echo "Bucket ${{ env.AWS_TERRAFORM_BUCKET_NAME }} deleted."
+
+          else
+            echo "Bucket ${{ env.AWS_TERRAFORM_BUCKET_NAME }} does not exist. Nothing to do."
+          fi
+
+      - name: Confirm Deletion
+        run: |
+          if aws s3api head-bucket --bucket "${{ env.AWS_TERRAFORM_BUCKET_NAME }}" 2>/dev/null; then
+            echo "Bucket deletion failed."
+            exit 1
+          else
+            echo "Bucket successfully deleted."
+          fi
