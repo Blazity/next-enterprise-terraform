@@ -45,6 +45,6 @@ jobs:
             - name: Cleanup State (Optional)
               if: always()
               run: |
-                  # This step can be used to cleanup or perform any post-destroy operations, like removing state files.
-                  # Just a placeholder, you can leave it out if not necessary.
+                  # This step can be used to clean up or perform post-destroy operations, like removing state files.
+                  # Just a placeholder, please feel free to leave it out if not necessary.
                   echo "Cleanup after destroying infrastructure."
