@@ -10,7 +10,9 @@ env:
   NODE_VERSION: 20
   ENV: dev
   REDIS_URL: ${{ vars.REDIS_URL }}
+  AWS_TERRAFORM_BUCKET_NAME: ${{ vars.AWS_TERRAFORM_BUCKET_NAME }}
 
+  AWS_REGION: ${{ vars.AWS_REGION }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   TF_VAR_docker_image_tag: ${{ github.sha }}
@@ -18,8 +20,32 @@ env:
 
 
 jobs:
+  create-terraform-bucket:
+    name: Create Terraform S3 bucket
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Check and Create S3 Bucket
+        run: |
+          BUCKET_NAME=${{ env.AWS_TERRAFORM_BUCKET_NAME }}
+
+          # Check if bucket exists
+          if aws s3api head-bucket --bucket "${{ env.AWS_TERRAFORM_BUCKET_NAME }}" 2>/dev/null; then
+            echo "Bucket ${{ env.AWS_TERRAFORM_BUCKET_NAME }} already exists."
+          else
+            echo "Bucket ${{ env.AWS_TERRAFORM_BUCKET_NAME }} does not exist. Creating..."
+            aws s3api create-bucket --bucket "${{ env.AWS_TERRAFORM_BUCKET_NAME }}" --region ${{ env.AWS_REGION }} --create-bucket-configuration LocationConstraint=${{ env.AWS_REGION }}
+            echo "Bucket ${{ env.AWS_TERRAFORM_BUCKET_NAME }} created."
+          fi
   ecr_frontend:
     name: Provision ECR for frontend
+    needs: create-terraform-bucket
     runs-on: ubuntu-22.04
     environment: dev
     steps:
@@ -31,7 +57,7 @@ jobs:
         with:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-2
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -77,7 +103,7 @@ jobs:
         with:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-2
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -133,7 +159,7 @@ jobs:
         with:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-2
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -187,6 +213,6 @@ jobs:
         env:
           DISTRIBUTION: ${{ env.CLOUDFRONT_FRONTEND_DISTRIBUTION_ID }}
           PATHS: '/'
-          AWS_REGION: 'eu-west-2'
+          AWS_REGION: ${{ env.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
