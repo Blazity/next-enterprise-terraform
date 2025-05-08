@@ -1,129 +1,68 @@
-# 🏗️ Enterprise Terraform AWS Infrastructure for Next.js 
+# Enterprise Terraform Infrastructure for Next.js 
+
+<a href="https://blazity.com/">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="/assets/blazity-logo-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="/assets/blazity-logo-light.svg">
+  <img alt="Logo" align="right" height="80" src="/assets/blazity-logo-light.svg">
+</picture>
+</a>
 
 This project provides a complete enterprise-grade Terraform setup for deploying a **Next.js** application to **AWS**. It integrates and configures a development cloud architecture with a fully automated deployment pipeline using Terraform and AWS services.
 
-![Architecture](arch-diagram.webp)
+A part of the [next-enterprise][next-enterprise] tooling.
 
-## 🚀 Features
+## Features
 
 - Automated provisioning of AWS infrastructure
-- Deployment of blazity [nextjs-enterprise](https://github.com/Blazity/next-enterprise) frontend boilerplate
 - Scalable & secure setup using:
-  - **VPC**
-  - **Elastic Container Service (ECS)**
-  - **Elastic Container Registry (ECR)**
-  - **Application Load Balancer**
-  - **S3 + CloudFront** for static assets
-  - **AWS WAF** (Web Application Firewall)
-  - **Redis Cluster** for caching
-- CI/CD ready
+  - VPC
+  - Elastic Container Service (ECS)
+  - Elastic Container Registry (ECR)
+  - Application Load Balancer
+  - S3 + CloudFront for static assets
+  - AWS WAF (Web Application Firewall)
+  - Redis Cluster for caching
+- CI/CD (GitHub Actions) ready
+  - Deploying the `next-enterprise` application
+  - Deploying the Storybook
+  - Destroying the stack
 
----
+## Documentation
 
-## 🔧 1. Setup Instructions
+There is a separate documentation that explains functionality of the project and comprehensively describes the installation process along with visual assets.
 
-### 🛠️ Prerequisites
-
-- [Terraform](https://www.terraform.io/downloads)
-- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
-- AWS IAM credentials with permissions to provision infrastructure
-- Docker (for building the Next.js app container)
-- Git
-
-### 📁 Clone the Repository
-
-```bash
-git clone https://github.com/tomaszczechowski/terraform-nextjs-enterprise.git
-cd terraform-nextjs-enterprise
-```
-
-### 🚀 Deployment options
-
-🤖 Automatic Deployment via GitHub Actions
-
-This project includes a GitHub Actions workflow to automate the CI/CD process.
-
-### ✅ Step 1: Configure GitHub Secrets
-
-Navigate to your repository’s **Settings > Secrets and variables > Actions**, and add the following secrets:
-
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
-
-These credentials are required for authenticating with AWS during deployment.
-
-### ✅ Step 2: Set Up GitHub Environment Variables
-
-Also, add the following **environment variables** under **Settings > Environments** or directly in your workflow configuration if you're using one:
-
-```env
-REDIS_URL=redis://next-enterprise-terraform-dev-redis-cluster.rwzcut.0001.euw2.cache.amazonaws.com:6379
-S3_STORYBOOK_BUCKET_NAME=next-enterprise-terraform-storybook
-```
-
-### ✅ Step 3: Set AWS region
-
-Also, in terraform `dev/backend.tf` file set AWS region you want to deploy application too.
+We __strongly encourage you__ to [visit our docs page describing deployments (docs.blazity.com)](https://docs.blazity.com/deployments/enterprise-cli)  
+and the [docs regarding the description of an AWS provider (docs.blazity.com)](https://docs.blazity.com/next-enterprise/deployments/amazon-web-services) to learn more.
 
 
-## 🚀 CI/CD Pipelines
+### Installation
 
-This project includes a comprehensive CI/CD setup with the following pipelines:
+In order to make deployments possible without manual work and attention needed - we've created an Enterprise CLI
 
-- **Check Frontend**  
-  Runs linting, unit tests, Prettier formatting, and smoke tests for Storybook.
+1. Open the terminal of your choice
+2. Install the CLI
+  ```sh
+  curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/Blazity/enterprise-cli/main/install.sh | sh
+  ```
+3. Make sure you're in the [next-enterprise][next-enterprise] as current working directory
+4. Execute `enterprise prepare aws` and follow the instructions in the terminal.
+5. Open the freshly created GitHub repository -> Actions -> Deploy Stack
 
-- **Playwright Tests**  
-  Executes end-to-end tests using Playwright.
+### Team & maintenance
 
-- **Deploy Stack**  
-  Deploys the full infrastructure stack, including the frontend application.
+**next-enterprise-terraform** is backed and maintained by [Blazity](https://blazity.com), providing up to date security features and integrated feature updates.
 
-- **Deploy Storybook**  
-  Builds and deploys the Storybook UI to the provisioned infrastructure.
+#### Active maintainers
+- Tomasz Czechowski ([tomaszczechowski](https://github.com/tomaszczechowski)) (original creator of the project) - Solutions Architect & DevOps
+- Igor Klepacki ([neg4n](https://github.com/neg4n)) - Open Source Software Developer
 
-- **Destroy Stack**  
-  Tears down the deployed infrastructure.
+### Architecture
 
-## 🛠️ Setting Up the Production Environment
+![Architecture](arch-diagram.webp)
 
-The codebase includes a pre-configured **development environment**. To create a **production environment**, follow these steps:
+## License
 
-1. **Duplicate the Terraform Configuration**
-   - Copy the contents of the `terraform/dev` folder.
-   - Rename the new folder to `terraform/prod`.
+MIT
 
-2. **Update Configuration References**
-   - Replace all occurrences of `dev` with `prod`.
-   - Replace all occurrences of `development` with `production`.
-
-3. **Create the Production Environment in GitHub**
-   - Go to your repository:  
-     **Settings > Environments > New Environment**
-   - Name it `production`.
-
-4. **Add Production Secrets**
-   Under **Settings > Secrets and variables > Actions**, and select the `production` environment, add the following secrets for the **production AWS tenant**:
-
-   - `AWS_ACCESS_KEY_ID`
-   - `AWS_SECRET_ACCESS_KEY`
-
-5. **Add Production Environment Variables**
-
-   Add the following environment variables to the `production` environment:
-
-   ```env
-   REDIS_URL=redis://next-enterprise-terraform-prod-redis-cluster.example.amazonaws.com:6379
-   S3_STORYBOOK_BUCKET_NAME=next-enterprise-terraform-storybook-prod
-   ```
-
-6. **Duplicate CI/CD Pipelines**
-    - Copy the GitHub Actions workflows related to infrastructure and Storybook deployment.
-    - Update:
-        - Workflow names and environment references to production
-        - Any file paths or settings that reference `dev` or `development`
-
-This ensures the production environment is isolated and configured consistently with your development setup.
-
----
-Created with ❤️ by [Tomasz Czechowski](https://github.com/tomaszczechowski)
+[next-enterprise]: https://github.com/Blazity/next-enterprise/
