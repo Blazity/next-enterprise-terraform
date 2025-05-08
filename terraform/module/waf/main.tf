@@ -8,7 +8,7 @@ terraform {
 }
 
 resource "aws_wafv2_ip_set" "blocked_ips" {
-    name               = "BlockedIPs"
+    name               = "bips-${var.project_name}-${var.env}"
     scope              = "CLOUDFRONT"
     description        = "List of IPs to block ${var.project_name} - ${var.env}"
     ip_address_version = "IPV4"
@@ -21,7 +21,7 @@ resource "aws_wafv2_ip_set" "blocked_ips" {
 }
 
 resource "aws_wafv2_web_acl" "waf" {
-    name        = "frontend-cloudfront-waf-${var.env}"
+    name        = "fe-cf-waf-${var.project_name}-${var.env}"
     description = "Rules for the frontend cloudfront traffic. ${var.project_name}"
     scope       = "CLOUDFRONT"
 
@@ -73,14 +73,15 @@ resource "aws_wafv2_web_acl" "waf" {
     }
 
     tags = {
-        name = "frontend-cloudfront-waf-${var.env}"
+        name = "fe-cf-waf-${var.project_name}-${var.env}"
     }
 
     visibility_config {
         cloudwatch_metrics_enabled = true
-        metric_name                = "waf-cloudfront-frontend-${var.env}"
+        metric_name                = "waf-cf-fe-${var.project_name}-${var.env}"
         sampled_requests_enabled   = true
     }
 
     depends_on = [aws_wafv2_ip_set.blocked_ips]
 }
+
