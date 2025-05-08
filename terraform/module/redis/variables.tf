@@ -29,3 +29,7 @@ variable "env" {
 variable "ingress_security_group_id" {
     type = string
 }
+
+variable "project_name" {
+    type = string
+}

@@ -30,6 +30,7 @@ module "ecs_frontend_auto_scaling" {
 module "redis_cluster" {
 	env = "dev"
 	source = "../module/redis"
+	project_name = local.project_name
 	logs_retention_in_days = 30
 	elasticache_cluster_name = "${local.project_name}-dev-redis-cluster"
 	elasticache_cluster_node_type = "cache.t4g.micro"
