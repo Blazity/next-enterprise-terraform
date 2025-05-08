@@ -1,5 +1,5 @@
 # Stage 1/4
-FROM node:18-alpine AS base
+FROM node:22-alpine AS base
 
 # Stage 2/4
 FROM base AS deps
@@ -17,7 +17,7 @@ COPY package.json pnpm-lock.yaml* ./
 RUN pnpm i --frozen-lockfile;
 
 # Stage 3/4
-FROM base AS builder
+FROM deps AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -27,7 +27,7 @@ ARG ENV
 ENV ENV=${ENV}
 ENV NEXT_TELEMETRY_DISABLED=0
 
-RUN npm run build
+RUN pnpm build
 
 # Stage 4/4
 FROM base AS runner

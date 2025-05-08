@@ -8,7 +8,7 @@ provider "aws" {
 }
 
 locals {
-    project_name = "next-enterprise-terraform"
+    project_name = "next-enterprise-iac"
 }
 
 module "app_infra" {

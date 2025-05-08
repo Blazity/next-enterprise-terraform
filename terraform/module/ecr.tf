@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "frontend_ecr_repo" {
-    name = "${var.project_name}-repo-frontend-${var.env}"
+    name = "${var.project_name}-fe-${var.env}"
     image_tag_mutability = "MUTABLE"
     force_delete = true
     
