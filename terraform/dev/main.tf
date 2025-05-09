@@ -7,12 +7,15 @@ provider "aws" {
 	region = "us-east-1"
 }
 
+data "aws_region" "current" {}
+
 locals {
     project_name = "next-enterprise-iac"
 }
 
 module "app_infra" {
 	source           = "../module"
+	region 			 = data.aws_region.current.name
 	project_name     = local.project_name
 	node_env         = "development"
 	env              = "dev"
