@@ -3,11 +3,6 @@ output "frontend_ecr_repo_name" {
     value       = module.app_infra.frontend_ecr_repo_name
 }
 
-output "redis_cluster_master_node_url" {
-    description = "The URL to Redis node"
-    value       = module.redis_cluster.redis_cluster_master_node_url
-}
-
 output "frontend_alb_dns_name" {
     description = "The URL to frontend ALB dns"
     value       = module.app_infra.frontend_alb_dns_name

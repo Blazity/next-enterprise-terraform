@@ -14,6 +14,10 @@ resource "aws_ecs_task_definition" "frontend_ecs_task" {
                 {
                     "name": "NODE_ENV",
                     "value": "${var.node_env}"
+                },
+                {
+                    "name": "REDIS_URL",
+                    "value": "redis://${var.redis_url}:6379"
                 }
             ],
             "portMappings": [
@@ -30,8 +34,8 @@ resource "aws_ecs_task_definition" "frontend_ecs_task" {
                     "awslogs-stream-prefix": "${var.project_name}-"
                 }
             },
-            "memory": 512,
-            "cpu": 256
+            "memory": 2048,
+            "cpu": 1024
         }
     ]
     DEFINITION
@@ -40,7 +44,7 @@ resource "aws_ecs_task_definition" "frontend_ecs_task" {
     memory                   = 2048
     cpu                      = 1024
     execution_role_arn       = aws_iam_role.task_execution_role.arn
-    task_role_arn            = aws_iam_role.task_execution_role.arn
+    task_role_arn            = aws_iam_role.task_role.arn
 }
 
 resource "aws_ecs_service" "frontend_ecs" {

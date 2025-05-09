@@ -36,9 +36,7 @@ WORKDIR /app
 RUN apk add --no-cache curl
 
 ARG ENV
-ARG REDIS_URL
 ENV ENV=${ENV}
-ENV REDIS_URL=${REDIS_URL}
 ENV NEXT_TELEMETRY_DISABLED=0
 
 RUN addgroup --system --gid 1001 nodejs

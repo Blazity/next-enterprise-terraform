@@ -19,6 +19,7 @@ module "app_infra" {
 	desired_count    = 1
 	docker_image_tag = var.docker_image_tag
 	logs_retention_in_days = 30
+	redis_url = module.redis_cluster.redis_cluster_master_node_url
 }
 
 module "ecs_frontend_auto_scaling" {

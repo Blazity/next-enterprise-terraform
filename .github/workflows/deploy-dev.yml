@@ -9,7 +9,6 @@ env:
   TERRAFORM_ROOT: ./terraform/dev
   NODE_VERSION: 20
   ENV: dev
-  REDIS_URL: ${{ vars.REDIS_URL }}
   AWS_TERRAFORM_BUCKET_NAME: ${{ vars.AWS_TERRAFORM_BUCKET_NAME }}
 
   AWS_REGION: ${{ vars.AWS_REGION }}
@@ -147,7 +146,6 @@ jobs:
         run: |
           cd frontend && docker build \
           --build-arg ENV=${{ env.ENV }} \
-          --build-arg REDIS_URL=${{ env.REDIS_URL }} \
           -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
