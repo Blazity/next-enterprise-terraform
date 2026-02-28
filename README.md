@@ -521,3 +521,5 @@ If issues persist, verify all prerequisites are correctly installed and configur
 ## Made with ❤️ at Blazity
 
 **next-enterprise-terraform** is backed and maintained by [Blazity](https://blazity.com), providing up to date security features and integrated feature updates.
+
+[next-enterprise]: https://github.com/Blazity/next-enterprise/
