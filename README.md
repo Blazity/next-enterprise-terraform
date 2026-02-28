@@ -18,7 +18,7 @@ A part of the [next-enterprise][next-enterprise] tooling.
   - [Infrastructure Setup is repetitive and Error-Prone](#1-infrastructure-setup-is-repetitive-and-error-prone)
   - [Lack of Standardization across projects](#2-lack-of-standardization-across-projects)
   - [Production Readiness is an afterthought](#3-production-readiness-is-an-afterthought)
-- [Architecture] (#architecture)
+- [Architecture](#architecture)
 - [Installation and setup](#installation-and-setup)
   - [Prerequisites](#prerequisites)
     - [AWS Account](#1-aws-account)
