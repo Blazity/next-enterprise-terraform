@@ -14,7 +14,7 @@ A part of the [next-enterprise][next-enterprise] tooling.
 
 - [What is this?](#what-is-this)
 - [Who is it for / Who is it NOT for?](#who-is-it-for)
-- [What's the problem](#what-is-the-problem)
+- [What's the problem](#whats-the-problem)
   - [Infrastructure Setup is repetitive and Error-Prone](#1-infrastructure-setup-is-repetitive-and-error-prone)
   - [Lack of Standardization across projects](#2-lack-of-standardization-across-projects)
   - [Production Readiness is an afterthought](#3-production-readiness-is-an-afterthought)
@@ -28,9 +28,9 @@ A part of the [next-enterprise][next-enterprise] tooling.
   - [Install the Enterprise CLI](#install-the-enterprise-cli)
 - [Setup and Deployment](#setup-and-deployment)
 - [CLI](#cli)
-  - [`enterprise completion` command](#enterprise-completion-command)
-  - [`enterprise prepare` command](#enterprise-prepare-command)
-  - [`enterprise help` command](#enterprise-help-command)
+  - [`enterprise completion` command](#cli-command-enterprise-completion)
+  - [`enterprise prepare` command](#cli-command-prepare-command)
+  - [`enterprise help` command](#cli-command-help-command)
 - [Troubleshooting](#troubleshooting)
 - [Active maintainers](#active-maintainers)
 - [License](#license)
@@ -138,7 +138,7 @@ Technical debt accumulates at the infrastructure level — where it is most cost
   - Redis Cluster for caching
   - other
 
-## Installation
+## Installation and setup
 
 To enable fully automated, production-grade deployments without manual infrastructure work, this project provides an Enterprise CLI.
 
