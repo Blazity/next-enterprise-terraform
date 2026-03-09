@@ -29,8 +29,8 @@ A part of the [next-enterprise][next-enterprise] tooling.
 - [Setup and Deployment](#setup-and-deployment)
 - [CLI](#cli)
   - [`enterprise completion` command](#cli-command-enterprise-completion)
-  - [`enterprise prepare` command](#cli-command-prepare-command)
-  - [`enterprise help` command](#cli-command-help-command)
+  - [`enterprise prepare` command](#cli-command-enterprise-prepare)
+  - [`enterprise help` command](#cli-command-enterprise-help)
 - [Troubleshooting](#troubleshooting)
 - [Active maintainers](#active-maintainers)
 - [License](#license)
@@ -348,6 +348,15 @@ For more details on a specific shell integration, run:
 enterprise completion [shell] --help
 ```
 
+### CLI Command: `enterprise prepare`
+
+Prepares infrastructure configuration for enterprise deployment.
+
+This command initializes cloud provider configuration, generates the
+required Infrastructure as Code (Terraform) setup, and prepares CI/CD
+integration for automated deployment.
+
+
 ### CLI Command: `enterprise help`
 
 Displays help information about the Enterprise CLI or a specific command.
@@ -369,15 +378,6 @@ enterprise [command] --help
 ```
 
 Displays general help information, including available commands.
-
-
-### CLI Command: `enterprise prepare`
-
-Prepares infrastructure configuration for enterprise deployment.
-
-This command initializes cloud provider configuration, generates the
-required Infrastructure as Code (Terraform) setup, and prepares CI/CD
-integration for automated deployment.
 
 ---
 
